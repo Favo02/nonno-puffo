@@ -1,4 +1,4 @@
-# Nonno Puffo - Guida TV per la Stampa
+# Nonno Puffo - Guida TV per nonni
 
 Generatore di guida TV PDF (a4) ad alta leggibilità.
 

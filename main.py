@@ -231,7 +231,7 @@ def genera_file_typst(
   header: none,
   footer: none
 )
-#set text(font: "Arial", size: 8.5pt, lang: "it")
+#set text(font: "Arial", size: 10pt, lang: "it")
 
 // Componente Card del canale (colorato, breakable per scorrere tra le colonne)
 #let channel-card(name, color, programs) = {{
@@ -245,25 +245,25 @@ def genera_file_typst(
       #block(
         fill: color,
         width: 100%,
-        inset: (x: 6pt, y: 5pt),
-        [#align(center)[#text(fill: white, weight: "bold", size: 10.5pt)[#upper(name)]]]
+        inset: (x: 8pt, y: 6pt),
+        [#align(center)[#text(fill: white, weight: "bold", size: 12pt)[#upper(name)]]]
       )
-      #pad(top: 3pt, bottom: 4pt, left: 5pt, right: 5pt)[
+      #pad(top: 4pt, bottom: 5pt, left: 6pt, right: 6pt)[
         #if programs.len() == 0 [
           #v(0.5em)
-          #align(center)[#text(style: "italic", fill: rgb("#7f8c8d"), size: 8pt)[Nessun programma]]
+          #align(center)[#text(style: "italic", fill: rgb("#7f8c8d"), size: 9.5pt)[Nessun programma]]
           #v(0.5em)
         ] else [
           #grid(
             columns: (auto, 1fr),
-            column-gutter: 5pt,
-            row-gutter: 4pt,
+            column-gutter: 6pt,
+            row-gutter: 5pt,
             ..programs.map(p => (
-              text(weight: "bold", size: 8.5pt, fill: color.darken(25%))[#p.at(0)],
+              text(weight: "bold", size: 10pt, fill: color.darken(25%))[#p.at(0)],
               [
-                #text(weight: "bold", size: 8.5pt, fill: rgb("#2c3e50"))[#p.at(1)]
+                #text(weight: "bold", size: 10pt, fill: rgb("#2c3e50"))[#p.at(1)]
                 #if p.at(2) != "" [
-                  \\\\ #text(size: 7.2pt, fill: rgb("#555555"))[#p.at(2)]
+                  \\\\ #text(size: 8.5pt, fill: rgb("#555555"))[#p.at(2)]
                 ]
               ]
             )).flatten()
@@ -284,18 +284,18 @@ def genera_file_typst(
         dati_giorno = palinsesto.get(data_key, {})
 
         footer_giorno = f"""
-        #place(left)[#text(6pt, fill: rgb("#7f8c8d"))[Generato con github.com/Favo02/nonno-puffo in data {ora_generazione}]]
-        #align(right)[#text(7.5pt, fill: rgb("#7f8c8d"))[Giorno dell'anno: {giorno_anno} | Pagina #context counter(page).display()]]
+        #place(left)[#text(7pt, fill: rgb("#7f8c8d"))[Generato con github.com/Favo02/nonno-puffo in data {ora_generazione}]]
+        #align(right)[#text(8.5pt, fill: rgb("#7f8c8d"))[Giorno dell'anno: {giorno_anno} | Pagina #context counter(page).display()]]
         """
 
         # Scrittura del layout per il giorno corrente (Tutti i canali insieme)
         content.append(f"""
 #set page(
-  header: align(center)[#text(13pt, weight: "bold")[{data_formattata} (Fascia {start_hour:02d}:00 - {end_hour:02d}:59)]],
+  header: align(center)[#text(15pt, weight: "bold")[{data_formattata} (Fascia {start_hour:02d}:00 - {end_hour:02d}:59)]],
   footer: [ {footer_giorno} ]
 )
 
-#columns(3, gutter: 8pt)[
+#columns(2, gutter: 10pt)[
 """)
 
         for ch in CANALI:
