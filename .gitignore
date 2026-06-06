@@ -1,0 +1,6 @@
+*.pdf
+__pycache__/
+.DS_Store
+.venv/
+.typ/
+guida.typ
