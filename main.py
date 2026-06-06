@@ -237,8 +237,12 @@ def genera_file_typst(
 #let channel-card(name, color, programs) = {{
   block(
     width: 100%,
-    stroke: 0.5pt + color.lighten(40%),
-    radius: 4pt,
+    stroke: (
+      left: 0.5pt + color.lighten(40%),
+      right: 0.5pt + color.lighten(40%),
+      top: 0.5pt + color.lighten(40%)
+    ),
+    radius: (top-left: 4pt, top-right: 4pt),
     clip: true,
     fill: white,
     [
@@ -270,6 +274,7 @@ def genera_file_typst(
           )
         ]
       ]
+      #line(length: 100%, stroke: 0.5pt + color.lighten(40%))
     ]
   )
 }}
