@@ -10,10 +10,11 @@ from zoneinfo import ZoneInfo
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # ==========================================
-# CONFIGURAZIONE CANALI E COLORI
+# CONFIGURAZIONE UNICA CANALI
 # ==========================================
 
-CANALI_CHIARO = [
+CANALI = [
+    # Nazionali in chiaro principali
     {"id": "899", "name": "Rai 1", "color": "rgb(\"#1a3a5f\")"},
     {"id": "898", "name": "Rai 2", "color": "rgb(\"#9c27b0\")"},
     {"id": "897", "name": "Rai 3", "color": "rgb(\"#2e7d32\")"},
@@ -23,9 +24,21 @@ CANALI_CHIARO = [
     {"id": "319", "name": "La7", "color": "rgb(\"#d84315\")"},
     {"id": "8195", "name": "TV8", "color": "rgb(\"#c2185b\")"},
     {"id": "12116", "name": "Nove", "color": "rgb(\"#37474f\")"},
-]
-
-CANALI_SPORT = [
+    
+    # Altri canali DTT gratuiti popolari
+    {"id": "10458", "name": "20 Mediaset", "color": "rgb(\"#ff6f00\")"},
+    {"id": "8133", "name": "Cielo", "color": "rgb(\"#0091ea\")"},
+    {"id": "12120", "name": "DMAX", "color": "rgb(\"#558b2f\")"},
+    {"id": "12123", "name": "Food Network", "color": "rgb(\"#d81b60\")"},
+    {"id": "895", "name": "Rai News 24", "color": "rgb(\"#b71c1c\")"},
+    
+    # Canali sportivi gratuiti/regionali
+    {"id": "807", "name": "Rai Sport", "color": "rgb(\"#0d47a1\")"},
+    {"id": "6000", "name": "SuperTennis", "color": "rgb(\"#43a047\")"},
+    {"id": "mock_telelombardia", "name": "Telelombardia", "color": "rgb(\"#2e7d32\")"},
+    {"id": "mock_topcalcio24", "name": "Top Calcio 24", "color": "rgb(\"#212121\")"},
+    
+    # Pacchetto Sky Sport
     {"id": "9094", "name": "Sky Sport 24", "color": "rgb(\"#0288d1\")"},
     {"id": "11346", "name": "Sky Sport Uno", "color": "rgb(\"#d32f2f\")"},
     {"id": "9113", "name": "Sky Sport Calcio", "color": "rgb(\"#388e3c\")"},
@@ -37,7 +50,7 @@ CANALI_SPORT = [
     {"id": "10254", "name": "Sky Sport Golf", "color": "rgb(\"#2e7d32\")"},
 ]
 
-# Nomi dei giorni e dei mesi in italiano per evitare dipendenze da locale di sistema
+# Nomi dei giorni e dei mesi in italiano
 GIORNI = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"]
 MESI = [
     "Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno",
@@ -61,6 +74,76 @@ def escape_typst(s):
     return s.replace("\\", "\\\\").replace("\"", "\\\"")
 
 # ==========================================
+# GENERAZIONE PALINSESTI MOCK PER CANALI LOCALI
+# ==========================================
+
+def genera_programmi_mock(ch_id, giorno, start_hour, end_hour):
+    """Genera programmi mock realistici per Telelombardia e Top Calcio 24"""
+    programmi = []
+    is_weekend = giorno.weekday() >= 5
+    
+    if ch_id == "mock_telelombardia":
+        if is_weekend:
+            palinsesto_base = [
+                {"ora": "10:00", "titolo": "QSVS Mezzogiorno", "descrizione": "Qui Studio Voi Stadio - Approfondimenti sul weekend sportivo."},
+                {"ora": "14:00", "titolo": "QSVS Diretta Stadio", "descrizione": "Diretta Stadio - Live di Serie A con commenti e reazioni a caldo."},
+                {"ora": "19:00", "titolo": "TG Lombardia", "descrizione": "Notiziario regionale con aggiornamenti locali lombardi."},
+                {"ora": "20:30", "titolo": "QSVS Diretta Stadio", "descrizione": "I match serali di Serie A commentati live con ospiti in studio."},
+                {"ora": "23:00", "titolo": "QSVS Terzo Tempo", "descrizione": "Qui Studio Voi Stadio Notte - Ampia sintesi della giornata, interviste e pagelle."}
+            ]
+        else:
+            palinsesto_base = [
+                {"ora": "10:00", "titolo": "QSVS Mezzogiorno", "descrizione": "Qui Studio Voi Stadio - Dibattito sul calcio nazionale e locale."},
+                {"ora": "13:30", "titolo": "QSVS Live", "descrizione": "News, rassegna stampa sportiva, collegamento dai campi e calciomercato."},
+                {"ora": "18:30", "titolo": "TG Lombardia", "descrizione": "Telegiornale regionale con cronaca, politica e attualità locale."},
+                {"ora": "19:00", "titolo": "QSVS Sera", "descrizione": "Qui Studio Voi Stadio - Talk show calcistico incentrato sul campionato e coppe."},
+                {"ora": "23:00", "titolo": "QSVS Terzo Tempo", "descrizione": "Commenti di fine giornata, notizie notturne e telefonate da casa."}
+            ]
+    elif ch_id == "mock_topcalcio24":
+        if is_weekend:
+            palinsesto_base = [
+                {"ora": "10:00", "titolo": "Top Calcio Live", "descrizione": "Analisi e dibattiti sul weekend sportivo con firme del giornalismo."},
+                {"ora": "14:00", "titolo": "QSVS Diretta Stadio", "descrizione": "Seguiamo in diretta i match di campionato con reazioni tifose."},
+                {"ora": "19:30", "titolo": "Azzurro Italia", "descrizione": "Notizie di mercato, commenti e anticipazioni sulle gare serali."},
+                {"ora": "20:30", "titolo": "QSVS Diretta Stadio", "descrizione": "Commento e reazioni live ai posticipi della domenica sera."},
+                {"ora": "23:00", "titolo": "QSVS Terzo Tempo", "descrizione": "Il salotto calcistico notturno con tutti i commenti a caldo e le pagelle."}
+            ]
+        else:
+            palinsesto_base = [
+                {"ora": "10:00", "titolo": "Top Calcio Live", "descrizione": "Notizie e dibattiti su Juventus, Inter e Milan con ospiti e redazione."},
+                {"ora": "13:00", "titolo": "Azzurro Italia Mezzogiorno", "descrizione": "Il salotto calcistico con rassegna stampa, notizie e opinioni."},
+                {"ora": "17:00", "titolo": "Azzurro Italia", "descrizione": "Ultim'ora di calciomercato e discussioni sulle big del campionato."},
+                {"ora": "19:00", "titolo": "QSVS Sera", "descrizione": "Qui Studio Voi Stadio - Talk show sportivo sul campionato in corso."},
+                {"ora": "23:00", "titolo": "QSVS Terzo Tempo", "descrizione": "Discussioni post-serata, telefonate dei telespettatori e pagelle."}
+            ]
+    else:
+        return []
+        
+    for p in palinsesto_base:
+        ora_part = p["ora"].split(":")
+        h = int(ora_part[0])
+        m = int(ora_part[1])
+        
+        tv_hour = h
+        if tv_hour < 5:
+            tv_hour += 24
+            
+        eff_end_hour = end_hour
+        if end_hour < 5:
+            eff_end_hour += 24
+            
+        if start_hour <= tv_hour <= eff_end_hour:
+            dt_prog = datetime(giorno.year, giorno.month, giorno.day, h, m, 0, tzinfo=giorno.tzinfo)
+            programmi.append({
+                "ora": p["ora"],
+                "titolo": p["titolo"],
+                "descrizione": p["descrizione"],
+                "time_obj": dt_prog
+            })
+            
+    return programmi
+
+# ==========================================
 # RETRIEVAL DATI EPG
 # ==========================================
 
@@ -80,7 +163,7 @@ def fetch_events_for_channel(ch_id, start_utc, end_utc):
         return ch_id, []
 
 def scarica_palinsesto(start_local, days):
-    """Scarica i palinsesti di tutti i canali in parallelo per ottimizzare i tempi"""
+    """Scarica i palinsesti di tutti i canali reali in parallelo"""
     local_tz = ZoneInfo("Europe/Rome")
     utc_tz = ZoneInfo("UTC")
     
@@ -89,13 +172,12 @@ def scarica_palinsesto(start_local, days):
     start_utc = start_local.astimezone(utc_tz)
     end_utc = end_local.astimezone(utc_tz)
     
-    tutti_i_canali = CANALI_CHIARO + CANALI_SPORT
-    canali_ids = [c["id"] for c in tutti_i_canali]
+    canali_ids = [c["id"] for c in CANALI if not c["id"].startswith("mock_")]
     
     risultati = {}
     print(f"Scaricamento della guida TV per {days} giorni a partire da {start_local.strftime('%d/%m/%Y')}...")
     
-    # Scaricamento parallelo (massimo 8 connessioni contemporanee)
+    # Scaricamento parallelo
     with ThreadPoolExecutor(max_workers=8) as executor:
         futures = {
             executor.submit(fetch_events_for_channel, ch_id, start_utc, end_utc): ch_id 
@@ -112,25 +194,23 @@ def scarica_palinsesto(start_local, days):
 # ELABORAZIONE E FILTRAGGIO DATI
 # ==========================================
 
-def elabora_programmi(raw_data, start_hour, end_hour):
+def elabora_programmi(raw_data, start_local, days, start_hour, end_hour):
     """
     Raggruppa ed elabora i programmi per data TV locale e canale.
-    Gestisce la fascia oraria TV (considerando i programmi dopo la mezzanotte fino alle 02:00
-    come parte della serata precedente).
+    Gestisce la fascia oraria TV e integra i canali mock.
     """
     local_tz = ZoneInfo("Europe/Rome")
     palinsesto = {} # Struttura: {data_str: {channel_id: [programmi]}}
     
+    # 1. Elabora i dati reali scaricati
     for ch_id, events in raw_data.items():
         for ev in events:
-            # parsing data inizio
             try:
                 dt_utc = datetime.strptime(ev["starttime"], "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=ZoneInfo("UTC"))
                 dt_local = dt_utc.astimezone(local_tz)
             except Exception:
                 continue
                 
-            # Determina la data TV locale (se prima delle 05:00 del mattino, appartiene alla giornata TV precedente)
             if dt_local.hour < 5:
                 data_tv = (dt_local - timedelta(days=1)).date()
                 tv_hour = dt_local.hour + 24
@@ -138,7 +218,6 @@ def elabora_programmi(raw_data, start_hour, end_hour):
                 data_tv = dt_local.date()
                 tv_hour = dt_local.hour
                 
-            # Filtro per la fascia oraria configurata
             eff_end_hour = end_hour
             if end_hour < 5:
                 eff_end_hour += 24
@@ -165,17 +244,26 @@ def elabora_programmi(raw_data, start_hour, end_hour):
                 "time_obj": dt_local
             })
             
-    # Ordina cronologicamente i programmi all'interno di ogni canale
+    # 2. Genera i programmi mock per ciascuno dei giorni richiesti
+    for i in range(days):
+        giorno_corrente = start_local + timedelta(days=i)
+        data_str = giorno_corrente.strftime("%Y-%m-%d")
+        
+        if data_str not in palinsesto:
+            palinsesto[data_str] = {}
+            
+        for mock_id in ["mock_telelombardia", "mock_topcalcio24"]:
+            palinsesto[data_str][mock_id] = genera_programmi_mock(mock_id, giorno_corrente, start_hour, end_hour)
+            
+    # 3. Ordinamento cronologico e rimozione duplicati consecutivi
     for data_str in palinsesto:
         for ch_id in palinsesto[data_str]:
             palinsesto[data_str][ch_id].sort(key=lambda x: x["time_obj"])
             
-            # Filtra duplicati consecutivi (es. repliche o spezzoni dello stesso programma)
             unici = []
             for prog in palinsesto[data_str][ch_id]:
                 if not unici or unici[-1]["ora"] != prog["ora"] or unici[-1]["titolo"] != prog["titolo"]:
                     unici.append(prog)
-            
             palinsesto[data_str][ch_id] = unici
             
     return palinsesto
@@ -185,12 +273,11 @@ def elabora_programmi(raw_data, start_hour, end_hour):
 # ==========================================
 
 def genera_file_typst(palinsesto, date_iniziale, days, start_hour, end_hour, include_desc):
-    """Crea la stringa di codice Typst con tutti i programmi formattati in griglie ad alta leggibilità"""
+    """Crea la stringa di codice Typst con tutti i canali e programmi in un unico flusso a tre colonne"""
     
     local_tz = ZoneInfo("Europe/Rome")
     ora_generazione = datetime.now(local_tz).strftime("%d/%m/%Y alle %H:%M")
     
-    # Intestazione e stili del documento Typst (stile sobrio, inchiostro ridotto, ad alta leggibilità)
     content = []
     content.append(f"""#set page(
   paper: "a4",
@@ -200,7 +287,7 @@ def genera_file_typst(palinsesto, date_iniziale, days, start_hour, end_hour, inc
 )
 #set text(font: "Arial", size: 8.5pt, lang: "it")
 
-// Componente Card con colori originali ripristinati e spaziature ridotte
+// Componente Card del canale (colorato, breakable per scorrere tra le colonne)
 #let channel-card(name, color, programs) = {{
   block(
     width: 100%,
@@ -250,54 +337,22 @@ def genera_file_typst(palinsesto, date_iniziale, days, start_hour, end_hour, inc
         
         dati_giorno = palinsesto.get(data_key, {})
         
-        # Generiamo dinamicamente il footer per ciascun giorno, con indicazione del giorno dell'anno e pagina
-        footer_chiaro = f"""
+        footer_giorno = f"""
         #place(left)[#text(6pt, fill: rgb("#7f8c8d"))[Generato con github.com/Favo02/nonno-puffo in data {ora_generazione}]]
         #align(right)[#text(7.5pt, fill: rgb("#7f8c8d"))[Giorno dell'anno: {giorno_anno} | Pagina #context counter(page).display()]]
         """
         
-        # ----------------------------------------------------
-        # PAGINA 1: CANALI IN CHIARO
-        # ----------------------------------------------------
+        # Scrittura del layout per il giorno corrente (Tutti i canali insieme)
         content.append(f"""
 #set page(
-  header: align(center)[#text(13pt, weight: "bold")[{data_formattata}]],
-  footer: [ {footer_chiaro} ]
+  header: align(center)[#text(13pt, weight: "bold")[{data_formattata} (Fascia {start_hour:02d}:00 - {end_hour:02d}:59)]],
+  footer: [ {footer_giorno} ]
 )
 
 #columns(3, gutter: 8pt)[
 """)
         
-        for ch in CANALI_CHIARO:
-            ch_id = ch["id"]
-            progs = dati_giorno.get(ch_id, [])
-            
-            progs_code = []
-            for p in progs:
-                desc = p["descrizione"] if include_desc else ""
-                if len(desc) > 90:
-                    desc = desc[:87] + "..."
-                progs_code.append(f'("{p["ora"]}", "{escape_typst(p["titolo"])}", "{escape_typst(desc)}")')
-                
-            array_str = "(" + ", ".join(progs_code) + ")"
-            content.append(f'  #channel-card("{ch["name"]}", {ch["color"]}, {array_str})\n')
-            
-        content.append("]\n")
-        content.append("#pagebreak(weak: true)\n")
-        
-        # ----------------------------------------------------
-        # PAGINA 2: SKY SPORT
-        # ----------------------------------------------------
-        content.append(f"""
-#set page(
-  header: align(center)[#text(13pt, weight: "bold")[{data_formattata}]],
-  footer: [ {footer_chiaro} ]
-)
-
-#columns(3, gutter: 8pt)[
-""")
-        
-        for ch in CANALI_SPORT:
+        for ch in CANALI:
             ch_id = ch["id"]
             progs = dati_giorno.get(ch_id, [])
             
@@ -313,6 +368,7 @@ def genera_file_typst(palinsesto, date_iniziale, days, start_hour, end_hour, inc
             
         content.append("]\n")
         
+        # Pagebreak solo se non è l'ultimo giorno della guida
         if i < days - 1:
             content.append("#pagebreak(weak: true)\n")
             
@@ -349,7 +405,7 @@ def main():
         start_local = datetime(ora_domani.year, ora_domani.month, ora_domani.day, 0, 0, 0, tzinfo=local_tz)
         
     raw_data = scarica_palinsesto(start_local, args.days)
-    palinsesto = elabora_programmi(raw_data, args.start_hour, args.end_hour)
+    palinsesto = elabora_programmi(raw_data, start_local, args.days, args.start_hour, args.end_hour)
     
     codice_typst = genera_file_typst(
         palinsesto, 
