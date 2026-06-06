@@ -10,31 +10,31 @@ from zoneinfo import ZoneInfo
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # ==========================================
-# CONFIGURAZIONE CANALI
+# CONFIGURAZIONE CANALI E COLORI
 # ==========================================
 
 CANALI_CHIARO = [
-    {"id": "899", "name": "Rai 1"},
-    {"id": "898", "name": "Rai 2"},
-    {"id": "897", "name": "Rai 3"},
-    {"id": "10464", "name": "Rete 4"},
-    {"id": "10354", "name": "Canale 5"},
-    {"id": "10454", "name": "Italia 1"},
-    {"id": "319", "name": "La7"},
-    {"id": "8195", "name": "TV8"},
-    {"id": "12116", "name": "Nove"},
+    {"id": "899", "name": "Rai 1", "color": "rgb(\"#1a3a5f\")"},
+    {"id": "898", "name": "Rai 2", "color": "rgb(\"#9c27b0\")"},
+    {"id": "897", "name": "Rai 3", "color": "rgb(\"#2e7d32\")"},
+    {"id": "10464", "name": "Rete 4", "color": "rgb(\"#e65100\")"},
+    {"id": "10354", "name": "Canale 5", "color": "rgb(\"#1565c0\")"},
+    {"id": "10454", "name": "Italia 1", "color": "rgb(\"#00838f\")"},
+    {"id": "319", "name": "La7", "color": "rgb(\"#d84315\")"},
+    {"id": "8195", "name": "TV8", "color": "rgb(\"#c2185b\")"},
+    {"id": "12116", "name": "Nove", "color": "rgb(\"#37474f\")"},
 ]
 
 CANALI_SPORT = [
-    {"id": "9094", "name": "Sky Sport 24"},
-    {"id": "11346", "name": "Sky Sport Uno"},
-    {"id": "9113", "name": "Sky Sport Calcio"},
-    {"id": "11237", "name": "Sky Sport Tennis"},
-    {"id": "7507", "name": "Sky Sport Arena"},
-    {"id": "9103", "name": "Sky Sport Max"},
-    {"id": "9096", "name": "Sky Sport F1"},
-    {"id": "9102", "name": "Sky Sport MotoGP"},
-    {"id": "10254", "name": "Sky Sport Golf"},
+    {"id": "9094", "name": "Sky Sport 24", "color": "rgb(\"#0288d1\")"},
+    {"id": "11346", "name": "Sky Sport Uno", "color": "rgb(\"#d32f2f\")"},
+    {"id": "9113", "name": "Sky Sport Calcio", "color": "rgb(\"#388e3c\")"},
+    {"id": "11237", "name": "Sky Sport Tennis", "color": "rgb(\"#7b1fa2\")"},
+    {"id": "7507", "name": "Sky Sport Arena", "color": "rgb(\"#f57c00\")"},
+    {"id": "9103", "name": "Sky Sport Max", "color": "rgb(\"#c2185b\")"},
+    {"id": "9096", "name": "Sky Sport F1", "color": "rgb(\"#e53935\")"},
+    {"id": "9102", "name": "Sky Sport MotoGP", "color": "rgb(\"#1976d2\")"},
+    {"id": "10254", "name": "Sky Sport Golf", "color": "rgb(\"#2e7d32\")"},
 ]
 
 # Nomi dei giorni e dei mesi in italiano per evitare dipendenze da locale di sistema
@@ -176,7 +176,6 @@ def elabora_programmi(raw_data, start_hour, end_hour):
                 if not unici or unici[-1]["ora"] != prog["ora"] or unici[-1]["titolo"] != prog["titolo"]:
                     unici.append(prog)
             
-            # Rimosso il limite fisso per permettere una visualizzazione completa di tutta la fascia oraria
             palinsesto[data_str][ch_id] = unici
             
     return palinsesto
@@ -195,46 +194,48 @@ def genera_file_typst(palinsesto, date_iniziale, days, start_hour, end_hour, inc
     content = []
     content.append(f"""#set page(
   paper: "a4",
-  margin: (x: 1cm, top: 1cm, bottom: 1.2cm),
-  header: align(right)[#text(8pt, fill: rgb("#7f8c8d"))[Guida TV Settimanale]],
-  footer: align(center)[#text(8pt, fill: rgb("#7f8c8d"))[
-    Generato con github.com/Favo02/nonno-puffo in data {ora_generazione} | Pagina #context counter(page).display()
-  ]]
+  margin: (x: 0.6cm, top: 0.8cm, bottom: 0.8cm),
+  header: none,
+  footer: none
 )
-#set text(font: "Arial", size: 9pt, lang: "it")
+#set text(font: "Arial", size: 8.5pt, lang: "it")
 
-// Componente Card semplificato (senza sfondi colorati pesanti, economico per la stampa)
-#let channel-card(name, programs) = {{
+// Componente Card con colori originali ripristinati e spaziature ridotte
+#let channel-card(name, color, programs) = {{
   block(
     width: 100%,
-    stroke: 0.8pt + black,
-    radius: 3pt,
-    inset: 8pt,
-    breakable: false,
+    stroke: 0.5pt + color.lighten(40%),
+    radius: 4pt,
+    clip: true,
+    fill: white,
     [
-      #align(center)[#text(weight: "bold", size: 11pt)[#upper(name)]]
-      #v(2pt)
-      #line(length: 100%, stroke: 0.5pt + black)
-      #v(4pt)
-      #if programs.len() == 0 [
-        #v(1em)
-        #align(center)[#text(style: "italic", fill: rgb("#7f8c8d"), size: 9pt)[Nessun programma]]
-        #v(1em)
-      ] else [
-        #grid(
-          columns: (auto, 1fr),
-          column-gutter: 6pt,
-          row-gutter: 6pt,
-          ..programs.map(p => (
-            text(weight: "bold", size: 9pt)[#p.at(0)],
-            [
-              #text(weight: "bold", size: 9pt)[#p.at(1)]
-              #if p.at(2) != "" [
-                \\\\ #text(size: 7.5pt, fill: rgb("#444444"))[#p.at(2)]
+      #block(
+        fill: color,
+        width: 100%,
+        inset: (x: 6pt, y: 5pt),
+        [#align(center)[#text(fill: white, weight: "bold", size: 10.5pt)[#upper(name)]]]
+      )
+      #pad(top: 3pt, bottom: 4pt, left: 5pt, right: 5pt)[
+        #if programs.len() == 0 [
+          #v(0.5em)
+          #align(center)[#text(style: "italic", fill: rgb("#7f8c8d"), size: 8pt)[Nessun programma]]
+          #v(0.5em)
+        ] else [
+          #grid(
+            columns: (auto, 1fr),
+            column-gutter: 5pt,
+            row-gutter: 4pt,
+            ..programs.map(p => (
+              text(weight: "bold", size: 8.5pt, fill: color.darken(25%))[#p.at(0)],
+              [
+                #text(weight: "bold", size: 8.5pt, fill: rgb("#2c3e50"))[#p.at(1)]
+                #if p.at(2) != "" [
+                  \\\\ #text(size: 7.2pt, fill: rgb("#555555"))[#p.at(2)]
+                ]
               ]
-            ]
-          )).flatten()
-        )
+            )).flatten()
+          )
+        ]
       ]
     ]
   )
@@ -245,20 +246,26 @@ def genera_file_typst(palinsesto, date_iniziale, days, start_hour, end_hour, inc
         giorno_corrente = date_iniziale + timedelta(days=i)
         data_key = giorno_corrente.strftime("%Y-%m-%d")
         data_formattata = formatta_data_it(giorno_corrente).upper()
+        giorno_anno = giorno_corrente.timetuple().tm_yday
         
         dati_giorno = palinsesto.get(data_key, {})
+        
+        # Generiamo dinamicamente il footer per ciascun giorno, con indicazione del giorno dell'anno e pagina
+        footer_chiaro = f"""
+        #place(left)[#text(6pt, fill: rgb("#7f8c8d"))[Generato con github.com/Favo02/nonno-puffo in data {ora_generazione}]]
+        #align(right)[#text(7.5pt, fill: rgb("#7f8c8d"))[Giorno dell'anno: {giorno_anno} | Pagina #context counter(page).display()]]
+        """
         
         # ----------------------------------------------------
         # PAGINA 1: CANALI IN CHIARO
         # ----------------------------------------------------
         content.append(f"""
-#align(center)[
-  #text(16pt, weight: "bold")[{data_formattata}] \\
-  #text(10pt, weight: "bold", fill: rgb("#555555"))[CANALI IN CHIARO (Fascia {start_hour:02d}:00 - {end_hour:02d}:59)]
-]
-#v(0.5em)
+#set page(
+  header: align(center)[#text(13pt, weight: "bold")[{data_formattata}]],
+  footer: [ {footer_chiaro} ]
+)
 
-#columns(3, gutter: 10pt)[
+#columns(3, gutter: 8pt)[
 """)
         
         for ch in CANALI_CHIARO:
@@ -273,7 +280,7 @@ def genera_file_typst(palinsesto, date_iniziale, days, start_hour, end_hour, inc
                 progs_code.append(f'("{p["ora"]}", "{escape_typst(p["titolo"])}", "{escape_typst(desc)}")')
                 
             array_str = "(" + ", ".join(progs_code) + ")"
-            content.append(f'  #channel-card("{ch["name"]}", {array_str})\n')
+            content.append(f'  #channel-card("{ch["name"]}", {ch["color"]}, {array_str})\n')
             
         content.append("]\n")
         content.append("#pagebreak(weak: true)\n")
@@ -282,13 +289,12 @@ def genera_file_typst(palinsesto, date_iniziale, days, start_hour, end_hour, inc
         # PAGINA 2: SKY SPORT
         # ----------------------------------------------------
         content.append(f"""
-#align(center)[
-  #text(16pt, weight: "bold")[{data_formattata}] \\
-  #text(10pt, weight: "bold", fill: rgb("#555555"))[SKY SPORT (Fascia {start_hour:02d}:00 - {end_hour:02d}:59)]
-]
-#v(0.5em)
+#set page(
+  header: align(center)[#text(13pt, weight: "bold")[{data_formattata}]],
+  footer: [ {footer_chiaro} ]
+)
 
-#columns(3, gutter: 10pt)[
+#columns(3, gutter: 8pt)[
 """)
         
         for ch in CANALI_SPORT:
@@ -303,7 +309,7 @@ def genera_file_typst(palinsesto, date_iniziale, days, start_hour, end_hour, inc
                 progs_code.append(f'("{p["ora"]}", "{escape_typst(p["titolo"])}", "{escape_typst(desc)}")')
                 
             array_str = "(" + ", ".join(progs_code) + ")"
-            content.append(f'  #channel-card("{ch["name"]}", {array_str})\n')
+            content.append(f'  #channel-card("{ch["name"]}", {ch["color"]}, {array_str})\n')
             
         content.append("]\n")
         
@@ -319,9 +325,9 @@ def genera_file_typst(palinsesto, date_iniziale, days, start_hour, end_hour, inc
 def main():
     parser = argparse.ArgumentParser(description="Genera una guida TV settimanale in PDF ottimizzata per la stampa e ad alta leggibilità.")
     parser.add_argument("--days", type=int, default=7, help="Numero di giorni da includere nella guida (default: 7)")
-    parser.add_argument("--start-date", type=str, default=None, help="Data iniziale nel formato AAAA-MM-GG (default: oggi)")
-    parser.add_argument("--start-hour", type=int, default=18, help="Ora iniziale della fascia oraria locale (default: 18)")
-    parser.add_argument("--end-hour", type=int, default=23, help="Ora finale della fascia oraria locale (default: 23)")
+    parser.add_argument("--start-date", type=str, default=None, help="Data iniziale nel formato AAAA-MM-GG (default: domani)")
+    parser.add_argument("--start-hour", type=int, default=10, help="Ora iniziale della fascia oraria locale (default: 10)")
+    parser.add_argument("--end-hour", type=int, default=22, help="Ora finale della fascia oraria locale (default: 22)")
     parser.add_argument("--output", type=str, default="guida_tv.pdf", help="Nome del file PDF generato (default: guida_tv.pdf)")
     parser.add_argument("--no-desc", action="store_true", help="Se specificato, non include le trame/descrizioni dei programmi")
     
@@ -337,8 +343,10 @@ def main():
             print(f"Errore: la data '{args.start_date}' non è valida. Usa il formato AAAA-MM-GG.", file=sys.stderr)
             sys.exit(1)
     else:
+        # Default: domani a mezzanotte
         ora_oggi = datetime.now(local_tz)
-        start_local = datetime(ora_oggi.year, ora_oggi.month, ora_oggi.day, 0, 0, 0, tzinfo=local_tz)
+        ora_domani = ora_oggi + timedelta(days=1)
+        start_local = datetime(ora_domani.year, ora_domani.month, ora_domani.day, 0, 0, 0, tzinfo=local_tz)
         
     raw_data = scarica_palinsesto(start_local, args.days)
     palinsesto = elabora_programmi(raw_data, args.start_hour, args.end_hour)
