@@ -239,10 +239,9 @@ def genera_file_typst(
     width: 100%,
     stroke: (
       left: 0.5pt + color.lighten(40%),
-      right: 0.5pt + color.lighten(40%),
-      top: 0.5pt + color.lighten(40%)
+      right: 0.5pt + color.lighten(40%)
     ),
-    radius: (top-left: 4pt, top-right: 4pt),
+    radius: 0pt,
     clip: true,
     fill: white,
     [
@@ -274,7 +273,7 @@ def genera_file_typst(
           )
         ]
       ]
-      #line(length: 100%, stroke: 0.5pt + color.lighten(40%))
+      #line(length: 100%, stroke: 0.8pt + color.lighten(40%))
     ]
   )
 }}
