@@ -32,7 +32,7 @@ uv run main.py [opzioni]
 - `--end-hour ORA`: Ora locale di fine della fascia oraria giornaliera (default: `22`).
 - `--output FILE.pdf`: Nome del file PDF generato (default: `guida_tv.pdf`).
 - `--no-desc`: Rimuove le brevi trame/descrizioni dei programmi per ottenere un PDF estremamente compatto.
-- `--font-size PT`: Dimensione del font di base per il PDF in punti (default: `10.0`).
+- `--font-size PT`: Dimensione del font per i titoli dei programmi e per le relative descrizioni (default: `10.0`).
 
 ## Funzionamento Interno
 

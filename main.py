@@ -231,7 +231,7 @@ def genera_file_typst(
   header: none,
   footer: none
 )
-#set text(font: "Arial", size: {base_font_size:.1f}pt, lang: "it")
+#set text(font: "Arial", size: 10pt, lang: "it")
 
 // Componente Card del canale (colorato, breakable per scorrere tra le colonne)
 #let channel-card(name, color, programs) = {{
@@ -249,12 +249,12 @@ def genera_file_typst(
         fill: color,
         width: 100%,
         inset: (x: 8pt, y: 6pt),
-        [#align(center)[#text(fill: white, weight: "bold", size: {base_font_size * 1.2:.1f}pt)[#upper(name)]]]
+        [#align(center)[#text(fill: white, weight: "bold", size: 12pt)[#upper(name)]]]
       )
       #pad(top: 4pt, bottom: 5pt, left: 6pt, right: 6pt)[
         #if programs.len() == 0 [
           #v(0.5em)
-          #align(center)[#text(style: "italic", fill: rgb("#7f8c8d"), size: {base_font_size * 0.95:.1f}pt)[Nessun programma]]
+          #align(center)[#text(style: "italic", fill: rgb("#7f8c8d"), size: 9.5pt)[Nessun programma]]
           #v(0.5em)
         ] else [
           #grid(
@@ -262,7 +262,7 @@ def genera_file_typst(
             column-gutter: 6pt,
             row-gutter: 5pt,
             ..programs.map(p => (
-              text(weight: "bold", size: {base_font_size:.1f}pt, fill: color.darken(25%))[#p.at(0)],
+              text(weight: "bold", size: 10pt, fill: color.darken(25%))[#p.at(0)],
               [
                 #text(weight: "bold", size: {base_font_size:.1f}pt, fill: rgb("#2c3e50"))[#p.at(1)]
                 #if p.at(2) != "" [
@@ -288,14 +288,14 @@ def genera_file_typst(
         dati_giorno = palinsesto.get(data_key, {})
 
         footer_giorno = f"""
-        #place(left)[#text({base_font_size * 0.7:.1f}pt, fill: rgb("#7f8c8d"))[Generato con github.com/Favo02/nonno-puffo in data {ora_generazione}]]
-        #align(right)[#text({base_font_size * 0.85:.1f}pt, fill: rgb("#7f8c8d"))[Giorno dell'anno: {giorno_anno} | Pagina #context counter(page).display()]]
+        #place(left)[#text(7pt, fill: rgb("#7f8c8d"))[Generato con github.com/Favo02/nonno-puffo in data {ora_generazione}]]
+        #align(right)[#text(8.5pt, fill: rgb("#7f8c8d"))[Giorno dell'anno: {giorno_anno} | Pagina #context counter(page).display()]]
         """
 
         # Scrittura del layout per il giorno corrente (Tutti i canali insieme)
         content.append(f"""
 #set page(
-  header: align(center)[#text({base_font_size * 1.5:.1f}pt, weight: "bold")[{data_formattata} (Fascia {start_hour:02d}:00 - {end_hour:02d}:59)]],
+  header: align(center)[#text(15pt, weight: "bold")[{data_formattata} (Fascia {start_hour:02d}:00 - {end_hour:02d}:59)]],
   footer: [ {footer_giorno} ]
 )
 
@@ -377,7 +377,7 @@ def main():
         "--font-size",
         type=float,
         default=10.0,
-        help="Dimensione del font di base per il PDF (default: 10.0)",
+        help="Dimensione del font per i titoli dei programmi e le descrizioni (default: 10.0)",
     )
 
     args = parser.parse_args()
